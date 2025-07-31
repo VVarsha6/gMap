@@ -6,6 +6,7 @@ from typing import Dict, Optional
 from fastapi.middleware.cors import CORSMiddleware
 # from fastapi import APIRouter,
 from bson.objectid import ObjectId
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -41,11 +42,11 @@ async def root():
 async def create_location(location: LocationModel):
     print("🛰 Received:", location)
     
-    
+    print("Geocoding step:")
     address = await reverse_geocode(location.lat, location.long)
     print("📍 Got address:", address)
     # except Exception as e:
-    print("❌ Error during geocoding:")
+    
     # raise HTTPException(status_code=500, detail="Geocoding failed")
 
     location_doc = {
@@ -57,7 +58,7 @@ async def create_location(location: LocationModel):
             "coordinates": [location.long, location.lat]
         }
     }
-    
+
     result = await db.locations.insert_one(location_doc)
     print("✅ Saved to DB:", result.inserted_id)
 
@@ -79,12 +80,17 @@ async def create_location(location: LocationModel):
     result = await db.locations.insert_one(location_doc)
     return {"id": str(result.inserted_id), "message": "Location added successfully."}
 
+
+
+
 @app.get("/locations")
 async def get_locations(
     lat: float = Query(...),
     lng: float = Query(...),
     max_distance: Optional[int] = 1000  # meters
 ):
+    print("🛰 Fetching locations near:", lat, lng, "within", max_distance, "meters")
+
     query = {
         "coordinates": {
             "$near": {
@@ -99,8 +105,9 @@ async def get_locations(
 
     locations = []
     cursor = db.locations.find(query)
+    print("🔍 Queryed MongoDB ")
     async for doc in cursor:
         doc["_id"] = str(doc["_id"])
         locations.append(doc)
-
-    return locations
+    print("get Locations:",locations)
+    return JSONResponse(content= locations, status_code=200)
