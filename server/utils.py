@@ -7,7 +7,7 @@ async def reverse_geocode(lat: float, lng: float) -> str:
         "lon": lng,
         "format": "json"
     }
-    headers = {"User-Agent": "fastapi-reverse-geocoder"}
+    headers = {"User-Agent": "fastapi-reverse-geocoder (prahlad@example.com)"}
 
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, params=params, headers=headers)
