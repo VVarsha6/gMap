@@ -26,7 +26,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_db():
     await connect_to_mongo()
-    
+
 class LocationModel(BaseModel):
     name: str
     long: float
@@ -41,12 +41,12 @@ async def root():
 async def create_location(location: LocationModel):
     print("🛰 Received:", location)
     
-    try:
-        address = await reverse_geocode(location.lat, location.long)
-        print("📍 Got address:", address)
-    except Exception as e:
-        print("❌ Error during geocoding:", e)
-        raise HTTPException(status_code=500, detail="Geocoding failed")
+    
+    address = await reverse_geocode(location.lat, location.long)
+    print("📍 Got address:", address)
+    # except Exception as e:
+    print("❌ Error during geocoding:")
+    # raise HTTPException(status_code=500, detail="Geocoding failed")
 
     location_doc = {
         "name": location.name,
@@ -57,7 +57,7 @@ async def create_location(location: LocationModel):
             "coordinates": [location.long, location.lat]
         }
     }
-
+    
     result = await db.locations.insert_one(location_doc)
     print("✅ Saved to DB:", result.inserted_id)
 
