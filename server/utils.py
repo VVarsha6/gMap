@@ -11,5 +11,5 @@ async def reverse_geocode(lat: float, lng: float) -> str:
 
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, params=params, headers=headers)
-        data = await resp.json()
+        data = resp.json()
         return data.get("display_name", "Unknown address")
