@@ -10,8 +10,9 @@ from bson.objectid import ObjectId
 app = FastAPI()
 
 origins = [
-    "https://your-vercel-project.vercel.app",  # replace with your Vercel domain
-    "http://localhost:3000"
+    "https://mapping-silk.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173"
 ]
 
 app.add_middleware(
@@ -25,8 +26,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_db():
     await connect_to_mongo()
-
-
+    
 class LocationModel(BaseModel):
     name: str
     long: float
