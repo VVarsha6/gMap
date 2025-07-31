@@ -39,6 +39,33 @@ async def root():
 
 @app.post("/locations")
 async def create_location(location: LocationModel):
+    print("🛰 Received:", location)
+    
+    try:
+        address = await reverse_geocode(location.lat, location.long)
+        print("📍 Got address:", address)
+    except Exception as e:
+        print("❌ Error during geocoding:", e)
+        raise HTTPException(status_code=500, detail="Geocoding failed")
+
+    location_doc = {
+        "name": location.name,
+        "org": location.org,
+        "address": address,
+        "coordinates": {
+            "type": "Point",
+            "coordinates": [location.long, location.lat]
+        }
+    }
+
+    result = await db.locations.insert_one(location_doc)
+    print("✅ Saved to DB:", result.inserted_id)
+
+    return {"id": str(result.inserted_id), "message": "Location added successfully."}
+
+
+@app.post("/notlocations")
+async def create_location(location: LocationModel):
     address = await reverse_geocode(location.lat, location.long)
     location_doc = {
         "name": location.name,
