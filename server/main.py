@@ -3,10 +3,24 @@ from db import connect_to_mongo, db
 from utils import reverse_geocode
 from pydantic import BaseModel, Field
 from typing import Dict, Optional
+from fastapi.middleware.cors import CORSMiddleware
 # from fastapi import APIRouter,
 from bson.objectid import ObjectId
 
 app = FastAPI()
+
+origins = [
+    "https://your-vercel-project.vercel.app",  # replace with your Vercel domain
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup_db():
