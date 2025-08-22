@@ -52,5 +52,3 @@ We call Earth our home — yet so many around us are homeless or in need. At the
 - Empowers students and residents to donate responsibly.
 - Removes guesswork in finding drop boxes.
 - Makes communities more connected and sustainable.
-   git clone https://github.com/your-username/pinbin.git
-   cd pinbin/client
